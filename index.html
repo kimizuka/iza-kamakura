@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>iza-kamakura.kimizuka.fm</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Displays the straight line distance to Kamakura Station." />
+    <meta property="og:title" content="iza-kamakura.kimizuka.fm" />
+    <meta property="og:description" content="Displays the straight line distance to Kamakura Station." />
+    <meta property="og:url" content="https://iza-kamakura.kimizuka.fm" />
+    <meta property="og:site_name" content="iza-kamakura.kimizuka.fm" />
+    <meta property="og:image" content="https://iza-kamakura.kimizuka.fm/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@ki_230" />
+    <meta name="twitter:title" content="iza-kamakura.kimizuka.fm" />
+    <meta name="twitter:description" content="Displays the straight line distance to Kamakura Station." />
+    <meta name="twitter:image" content="https://iza-kamakura.kimizuka.fm/og.png" />
+    <script src="https://geographiclib.sourceforge.io/scripts/geographiclib-geodesic.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FAFAFA;
+        font-family: "Roboto", sans-serif;
+        font-size: 24px;
+        font-weight: 900;
+        background: #1565C0;
+      }
+
+      .display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #m {
+        font-size: 40px;
+      }
+
+      #timestamp {
+        position: fixed;
+        bottom: 8px; right: 8px;
+        color: #0D47A1;
+        font-size: 12px;
+      }
+
+      #console {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        transform: translateX(100%);
+        transition: transform .2s ease-in-out;
+      }
+
+      #btn-close {
+        width: 32px;
+        height: 100%;
+      }
+
+      #log {
+        box-sizing: border-box;
+        padding: 16px;
+        width: calc(100% - 16px);
+        height: 100%;
+        font-size: 14px;
+        background: #212121;
+        box-shadow: 0 0 8px rgba(0, 0, 0, .4);
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="display">
+        <p id="m"></p>
+        <p>to Kamakura Station</p>
+      </div>
+      <p id="timestamp"></p>
+      <div id="console">
+        <div id="btn-close"></div>
+        <div id="log"></div>
+      </div>
+    </div>
+    <script>
+      const goalLatLong = [35.31902777, 139.55041666];
+
+      navigator.geolocation.watchPosition(handleWatchPosition, null, {
+        enableHighAccuracy: true,
+        timeout: 60000,
+        maximumAge: 0
+      });
+
+      document.getElementById('btn-close').addEventListener('click', () => {
+        document.getElementById('console').style.transform = 'translateX(100%)';
+      });
+
+      document.getElementById('timestamp').addEventListener('click', () => {
+        document.getElementById('console').style.transform = 'translateX(0)';
+      });
+
+      function handleWatchPosition(evt) {
+        const latitude = evt.coords.latitude;
+        const longitude = evt.coords.longitude;
+        const accuracy = evt.coords.accuracy;
+        const altitude = evt.coords.altitude;
+        const altitudeAccuracy = evt.coords.altitudeAccuracy;
+        const heading = evt.coords.heading || 0;
+        const speed = evt.coords.speed;
+        const timestamp = evt.timestamp;
+
+        document.getElementById('log').innerText = `${JSON.stringify({
+          coords: {
+            latitude,
+            longitude,
+            accuracy,
+            altitude,
+            altitudeAccuracy,
+            heading,
+            speed
+          },
+          timestamp
+        }, null, 2)}`;
+        document.getElementById('timestamp').textContent = timestamp;
+
+        if (latitude && longitude) {
+          const geod = window.geodesic.Geodesic.WGS84;
+          const r = geod.Inverse(
+            latitude, longitude,
+            ...goalLatLong
+          );
+
+          document.getElementById('m').textContent = `${ r.s12.toFixed(2) }m`;
+        }
+      }
+    </script>
+  </body>
+</html>
