@@ -17,7 +17,7 @@
     <meta name="twitter:title" content="iza-kamakura.kimizuka.fm" />
     <meta name="twitter:description" content="Displays the straight line distance to Kamakura Station." />
     <meta name="twitter:image" content="https://iza-kamakura.kimizuka.fm/og.png" />
-    <script src="https://geographiclib.sourceforge.io/scripts/geographiclib-geodesic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/geographiclib@1.52.2/geographiclib.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap" rel="stylesheet">
@@ -134,7 +134,7 @@
         document.getElementById('timestamp').textContent = timestamp;
 
         if (latitude && longitude) {
-          const geod = window.geodesic.Geodesic.WGS84;
+          const geod = window.GeographicLib.Geodesic.WGS84;
           const r = geod.Inverse(
             latitude, longitude,
             ...goalLatLong
